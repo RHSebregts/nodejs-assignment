@@ -32,7 +32,15 @@ const readOutLoud = (vehicleName) => {
 	// What's the difference betweeen fs.createReadStream, fs.readFileSync, and fs.readFileAsync?
 	// And when to use one or the others
 	// =========================
-
+    // Answer:
+    // fs.createReadStream will process data in chunks of a set size. 
+    // This keeps the memory load smaller. Since it deals with data in small chunks you can start processing the data early.
+    // Freeing up memory for a readStream is more complex (for the system, that is).
+    // fs.readFileAsync will asynchronously add the entire file to memory.
+    // fs.readFileSync will synchronously add the entire file to memory, and thus will block the eventloop. This is less ideal for larger files.
+    // fs.readFileSync and fs.readFileAsync will put the entire file in memory. This makes it easy for Node to remove them from memory, but it will also take a lot of memory.
+    // Because fs.createReadStream works with smaller chunks of data your data will most likely be available for use quicker.
+    // fs.createReadStream is best used with more frequent requests and larger files. fs.readFile
 	// Now comes the interesting part,
 	// Handling this filestream requires us to create pipeline that will transform the raw string
 	// to object and sent out to nats
@@ -53,8 +61,8 @@ const readOutLoud = (vehicleName) => {
 				// setTimeout in this case is there to emulate real life situation
 				// data that came out of the vehicle came in with irregular interval
 				// Hence the Math.random() on the second parameter
+				const connectionDelay = Math.ceil(Math.random()*10)
 				setTimeout(() => {
-
 					i++
 					if((i % 100) === 0)
 						console.log(`vehicle ${vehicleName} sent have sent ${i} messages`)
@@ -63,8 +71,9 @@ const readOutLoud = (vehicleName) => {
 					// it also includes the vehicle name to seggregate data between different vehicle
 
 					nats.publish(`vehicle.${vehicleName}`, obj, cb)
-
-				}, Math.ceil(Math.random() * 150))
+					obj.vehicleName = vehicleName;
+					routeArray.push(obj)
+				}, Math.ceil(Math.random() * 150) * connectionDelay)
 			}
 		})))
 	// =========================
@@ -72,12 +81,33 @@ const readOutLoud = (vehicleName) => {
 	// What would happend if it failed to publish to nats or connection to nats is slow?
 	// Maybe you can try to emulate those slow connection
 	// =========================
+	// 
 }
 
 // This next few lines simulate Henk's (our favorite driver) shift
 console.log("Henk checks in on test-bus-1 starting his shift...")
 readOutLoud("test-bus-1")
 	.once("finish", () => {
-		console.log("henk is on the last stop and he is taking a cigarrete while waiting for his next trip")
+		console.log("Henk is on the last stop and he is taking a cigarrete while waiting for his next trip")
+		console.log("Henk is ready to go again!")
+		if(routeArray.length){
+			const reversedRoute = routeArray.reverse()
+			readReverse(reversedRoute)
+		}
 	})
 // To make your presentation interesting maybe you can make henk drive again in reverse
+let routeArray = []
+const readReverse = (array) =>{
+	const publishRouteInfo = (i)=>{
+		const data = array[i]
+		setTimeout(
+			function(){
+				nats.publish(`vehicle.${data.vehicleName}`, data)
+				if((i % 100) === 0)
+				console.log(`vehicle ${data.vehicleName} sent have sent ${i} reversed messages`)
+		}, (i*100) +  Math.ceil(Math.random() * 150))
+	}
+	for (let i = 1; i < array.length; i++) {
+		publishRouteInfo(i)
+	}
+}
