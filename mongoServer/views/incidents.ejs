@@ -36,13 +36,13 @@
                 </tr>
             </thead>
             <tbody>
-                <%if(incidents){
+                <%if(incidents && incidents.length){
                             incidents.forEach((incident,index) =>{%>
                     <tr class="" id="incident_<%=index%>">
                         <td class="vehicle_time">
                             <%
                                 const date = new Date(incident.data.time)
-                                const dateString = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+                                const dateString = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
                             %>
                                 <%=dateString%>
                         </td>
@@ -96,7 +96,7 @@
                     break;
                 case 'time':
                     const date = new Date(data[key])
-                    const dateString = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+                    const dateString = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
                     newCell.textContent = dateString;
                     break;
                 default:
