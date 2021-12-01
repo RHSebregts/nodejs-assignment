@@ -47,7 +47,11 @@ app.get("/incidentLookup", async (req,res)=>{
 app.post("/findIncidents", async (req,res)=>{
     const dbFilter = getRouteFilter(req.body, true)
     const foundIncidents = await IncidentEntry.find(dbFilter).catch((err)=>{console.log(err)})
-    res.render('../app/views/incidents.ejs', {incidents : foundIncidents})
+    if(req.body.type === 'api'){
+        res.send({incidents : foundIncidents})
+    }else{
+        res.render('../app/views/incidents.ejs', {incidents : foundIncidents})
+    }
 })
 app.get("/routeInformationLookup", async (req,res)=>{
     res.render('../app/views/routeInformationLookup.ejs', {routeEntries : null})
@@ -55,7 +59,11 @@ app.get("/routeInformationLookup", async (req,res)=>{
 app.post("/findRouteEntries", async (req,res)=>{
     const dbFilter = getRouteFilter(req.body)
     const foundRouteInformation = await RouteInformationEntry.find(dbFilter).catch((err)=>{console.log(err)})
-    res.render('../app/views/viewRouteInformation.ejs', {routeEntries : foundRouteInformation})
+    if(req.body.type === 'api'){
+        res.send({routeEntries : foundRouteInformation})
+    }else{
+        res.render('../app/views/viewRouteInformation.ejs', {routeEntries : foundRouteInformation})
+    }
 })
 // Websocket Logic
 const io = require('socket.io')(http);
@@ -96,13 +104,15 @@ const getRouteFilter = (routeCriteria, lookForIncident)=>{
     queryKeys.forEach(key=>{
         let queryItem = routeCriteria[key]
         let dbKey = key
+        if(dbKey.type === 'api'){
+            return
+        }
         if(lookForIncident){
             dbKey = `data.${key}`
         }
         if(queryItem[2]){
             dbFilter[`data.${key}`] = {$eq : ''}
         }else if(queryItem[0] === 'ignore'){
-            return
         }else if(queryItem[0]=== 'gt'){
             dbFilter[dbKey] = {$gt : parseFloat(queryItem[1])}
         }else if(queryItem[0]=== 'lt'){
