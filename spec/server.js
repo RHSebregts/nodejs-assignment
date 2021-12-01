@@ -212,4 +212,119 @@ describe('Posting /findIncidents', ()=>{
             done()
         })
     })
+    it('should return only documents where time is empty', (done)=>{
+        const postBody = {
+            time: [ 'ignore', '', 'on' ],
+            energy: [ 'ignore', '' ],
+            odo: [ 'ignore', '' ],
+            speed: [ 'ignore', ''],
+            soc: [ 'ignore', '' ],
+            type : 'api'
+          }
+        chai
+        .request(server)
+        .post('/findIncidents/')
+        .send(postBody)
+        .end((err,res)=>{
+            res.should.have.status(200)
+            res.body.should.be.a('object')
+            res.body.should.have.property('incidents')
+            res.body.incidents.forEach(entry =>{
+                entry.should.have.property('time').equals('')
+            })
+            done()
+        })
+    })
+    it('should return only documents where energy is empty', (done)=>{
+        const postBody = {
+            time: [ 'ignore', '2017-11-23T12:20' ],
+            energy: [ 'ignore', '', 'on' ],
+            odo: [ 'ignore', '' ],
+            speed: [ 'ignore', '', 'on' ],
+            soc: [ 'ignore', '' ],
+            type : 'api'
+          }
+        chai
+        .request(server)
+        .post('/findIncidents/')
+        .send(postBody)
+        .end((err,res)=>{
+            res.should.have.status(200)
+            res.body.should.be.a('object')
+            res.body.should.have.property('incidents')
+            res.body.incidents.forEach(entry =>{
+                entry.should.have.property('energy').equals('')
+            })
+            done()
+        })
+    })
+    it('should return only documents where odo is empty', (done)=>{
+        const postBody = {
+            time: [ 'ignore', '2017-11-23T12:20' ],
+            energy: [ 'ignore', '' ],
+            odo: [ 'ignore', '', 'on' ],
+            speed: [ 'ignore', ''],
+            soc: [ 'ignore', '' ],
+            type : 'api'
+          }
+        chai
+        .request(server)
+        .post('/findIncidents/')
+        .send(postBody)
+        .end((err,res)=>{
+            res.should.have.status(200)
+            res.body.should.be.a('object')
+            res.body.should.have.property('incidents')
+            res.body.incidents.forEach(entry =>{
+                entry.should.have.property('odo').equals('')
+            })
+            done()
+        })
+    })
+    it('should return only documents where speed is empty', (done)=>{
+        const postBody = {
+            time: [ 'ignore', '2017-11-23T12:20' ],
+            energy: [ 'ignore', '' ],
+            odo: [ 'ignore', '' ],
+            speed: [ 'ignore', '', 'on' ],
+            soc: [ 'ignore', '' ],
+            type : 'api'
+          }
+        chai
+        .request(server)
+        .post('/findIncidents/')
+        .send(postBody)
+        .end((err,res)=>{
+            res.should.have.status(200)
+            res.body.should.be.a('object')
+            res.body.should.have.property('incidents')
+            res.body.incidents.forEach(entry =>{
+                entry.should.have.property('speed').equals('')
+            })
+            done()
+        })
+    })
+    it('should return only documents where soc is empty', (done)=>{
+        const postBody = {
+            time: [ 'ignore', '2017-11-23T12:20' ],
+            energy: [ 'ignore', '' ],
+            odo: [ 'ignore', '' ],
+            speed: [ 'ignore', ''],
+            soc: [ 'ignore', '', 'on' ],
+            type : 'api'
+          }
+        chai
+        .request(server)
+        .post('/findIncidents/')
+        .send(postBody)
+        .end((err,res)=>{
+            res.should.have.status(200)
+            res.body.should.be.a('object')
+            res.body.should.have.property('incidents')
+            res.body.incidents.forEach(entry =>{
+                entry.should.have.property('soc').equals('')
+            })
+            done()
+        })
+    })
 })
