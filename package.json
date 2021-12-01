@@ -6,14 +6,18 @@
     "scripts": {
         "start-nats": "sh ./start-nats",
         "start-broadcast": "node vehicle-data-generator/index.js",
-        "connect-db": "node mongoServer/server.js"
+        "connect-db": "node app/server.js",
+        "test": "mocha spec/*.js --exit -t 15000"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "chai": "^4.3.4",
+        "chai-http": "^4.3.0",
         "csv-parse": "^3.2.0",
         "ejs": "^3.1.6",
         "express": "^4.17.1",
+        "mocha": "^9.1.3",
         "mongoose": "^6.0.13",
         "nats": "^1.0.1",
         "socket.io": "^4.3.2"
