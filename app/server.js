@@ -35,27 +35,27 @@ http.listen(port, ()=>{
     console.log(`Listening on *:${port}`);
 });
 app.get("/", async(req,res)=>{
-    res.render('../mongoServer/views/routeInformation.ejs')
+    res.render('../app/views/routeInformation.ejs')
 })
 app.get("/incidents", async(req,res)=>{
     const incidents = await IncidentEntry.find()
-    res.render('../mongoServer/views/incidents.ejs', {incidents : incidents})
+    res.render('../app/views/incidents.ejs', {incidents : incidents})
 })
 app.get("/incidentLookup", async (req,res)=>{
-    res.render('../mongoServer/views/incidentLookup.ejs', {incidents : null})
+    res.render('../app/views/incidentLookup.ejs', {incidents : null})
 })
 app.post("/findIncidents", async (req,res)=>{
     const dbFilter = getRouteFilter(req.body, true)
     const foundIncidents = await IncidentEntry.find(dbFilter).catch((err)=>{console.log(err)})
-    res.render('../mongoServer/views/incidents.ejs', {incidents : foundIncidents})
+    res.render('../app/views/incidents.ejs', {incidents : foundIncidents})
 })
 app.get("/routeInformationLookup", async (req,res)=>{
-    res.render('../mongoServer/views/routeInformationLookup.ejs', {routeEntries : null})
+    res.render('../app/views/routeInformationLookup.ejs', {routeEntries : null})
 })
 app.post("/findRouteEntries", async (req,res)=>{
     const dbFilter = getRouteFilter(req.body)
     const foundRouteInformation = await RouteInformationEntry.find(dbFilter).catch((err)=>{console.log(err)})
-    res.render('../mongoServer/views/viewRouteInformation.ejs', {routeEntries : foundRouteInformation})
+    res.render('../app/views/viewRouteInformation.ejs', {routeEntries : foundRouteInformation})
 })
 // Websocket Logic
 const io = require('socket.io')(http);
@@ -120,3 +120,4 @@ const getRouteFilter = (routeCriteria, lookForIncident)=>{
 
 listenForVehicleData('test-bus-1')
 
+module.exports = app.listen(2022)
